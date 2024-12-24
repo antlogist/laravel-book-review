@@ -29,7 +29,7 @@ class ReviewFactory extends Factory
 
     public function goodRating()
     {
-        return $this->state(function (array $att) {
+        return $this->state(function () {
             return [
                 'rating' => fake()->numberBetween(4, 5),
             ];
@@ -38,7 +38,7 @@ class ReviewFactory extends Factory
 
     public function averageRating()
     {
-        return $this->state(function (array $att) {
+        return $this->state(function () {
             return [
                 'rating' => fake()->numberBetween(3, 4),
             ];
@@ -47,7 +47,7 @@ class ReviewFactory extends Factory
 
     public function badRating()
     {
-        return $this->state(function (array $att) {
+        return $this->state(function () {
             return [
                 'rating' => fake()->numberBetween(1, 3),
             ];
