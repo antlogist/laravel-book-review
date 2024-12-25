@@ -20,7 +20,6 @@ class Book extends Model
         return $query->where('title', 'LIKE', '%' . $title . '%');
     }
 
-
     public function scopePopular(Builder $query, $from = null, $to = null): Builder
     {
         // return $query->withCount('reviews')->orderBy('reviews_count', 'desc');
