@@ -22,7 +22,7 @@ class BookController extends Controller
         )->get();                                         // Execute the query and retrieve the results
 
         // Return the 'books.index' view and pass the $books variable to it for rendering.
-        // return view('books.index', compact('books')); // Another variant ti return the 'books.index.view'
+        // return view('books.index', compact('books')); // Another variant to return the 'books.index.view' and pass arguments
         return view('books.index', ['books' => $books]);
     }
 
