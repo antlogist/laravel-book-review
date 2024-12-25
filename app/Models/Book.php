@@ -36,13 +36,18 @@ class Book extends Model
         ], 'rating')->orderBy('reviews_avg_rating', 'desc');
     }
 
+    public function scopeMinReviews(Builder $query, int $minReviews)
+    {
+        return $query->withCount('reviews')->having('reviews_count', '>=', $minReviews)->orderBy('reviews_count', 'desc');
+    }
+
     private function dateRangeFilter(Builder $query, $from = null, $to = null)
     {
         if (!$from && $to) {
             $query->where('created_at', '<=', $to);
         } else if ($from && !$to) {
             $query->where('created_at', '>=', $from);
-        } else if($from && $to) {
+        } else if ($from && $to) {
             $query->whereBetween('created_at', [$from, $to]);
         }
     }
