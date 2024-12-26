@@ -67,12 +67,15 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
+        $cacheKey = 'book:' . $book->id;
+
         // Load reviews sorted by creation time (most recent first)
-        $book->load([
+
+        $book = Cache::remember($cacheKey, 3600, fn() => $book->load([
             'reviews' => function ($query) {
                 $query->latest();
             },
-        ]);
+        ]));
 
         $book->loadCount('reviews');
         $book->loadAvg('reviews', 'rating');
