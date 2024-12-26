@@ -12,14 +12,26 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        // Retrieve the value of the 'title' input from the request object and assign it to the $title variable.
+        // Retrieves the 'title' and 'filter' input values from the request.
         $title = $request->input('title');
+        $filter = $request->input('filter', '');
 
         // Fetch all books from the database using the Book model. If a title is provided, filter the results by that title.
         $books = Book::when(
             $title,                                       // Condition: if $title is not empty or null
             fn($query, $title) => $query->title($title)   // Callback: apply the title filter to the query
-        )->get();                                         // Execute the query and retrieve the results
+        );
+
+        // Applies a filter based on the selected option, otherwise defaults to sorting by latest.
+        $books = match ($filter) {
+            'popular_last_month' => $books->popularLastMonth(),
+            'popular_last_6months' => $books->popularLast6Months(),
+            'highest_rated_last_month' => $books->highestRatedLastMonth(),
+            'highest_rated_last_6months' => $books->highestRatedLast6Months(),
+            default => $books->withReviewsCount()->withAvgRating()->latest()
+        };
+
+        $books = $books->get();                           // Execute the query and retrieve the results
 
         // Return the 'books.index' view and pass the $books variable to it for rendering.
         return view('books.index', ['books' => $books]);
