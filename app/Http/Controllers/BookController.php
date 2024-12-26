@@ -35,8 +35,9 @@ class BookController extends Controller
         // $books = $books->get();                           // Execute the query and retrieve the results
 
         // Caches the result of the `$books->get()` query for 3600 seconds (1 hour).
-        // $books = cache()->remember('books', 3600, fn() => $books->get());
-        $books = Cache::remember('books', 3600, fn() => $books->get());
+        $cacheKey = 'books:' . $filter . ':' . $title;
+        // $books = cache()->remember($cacheKey, 3600, fn() => $books->get());
+        $books = Cache::remember($cacheKey, 3600, fn() => $books->get());
 
         // Return the 'books.index' view and pass the $books variable to it for rendering.
         return view('books.index', ['books' => $books]);
