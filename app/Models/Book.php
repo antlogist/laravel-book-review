@@ -10,6 +10,8 @@ class Book extends Model
 {
     use HasFactory;
 
+    private static $filterTitle = '';
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -17,6 +19,7 @@ class Book extends Model
 
     public function scopeTitle(Builder $query, string $title): Builder
     {
+        self::$filterTitle = $title;
         return $query->where('title', 'LIKE', '%' . $title . '%');
     }
 
@@ -97,5 +100,32 @@ class Book extends Model
         return $query->highestRated(now()->subMonths(6), now())
             ->popular(now()->subMonths(6), now())
             ->minReviews(3);
+    }
+
+    protected static function booted(): void
+    {
+
+        $filters = [
+            '',
+            'popular_last_month',
+            'popular_last_6months',
+            'highest_rated_last_month',
+            'highest_rated_last_6months'
+        ];
+
+        static::updated(
+            fn(Book $book) => self::clearCache($book, $filters)
+        );
+
+        static::deleted(
+            fn(Book $book) => self::clearCache($book, $filters)
+        );
+    }
+
+    private static function clearCache(Book $book, array $filters): void
+    {
+        cache()->forget('book:' . $book->id);
+
+        array_map(fn($filter) => cache()->forget('books:' . $filter . ':' . self::$filterTitle), $filters);
     }
 }
