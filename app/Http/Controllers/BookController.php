@@ -59,9 +59,19 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Book $book)
     {
-        //
+        // Load reviews sorted by creation time (most recent first)
+        $book->load([
+            'reviews' => function ($query) {
+                $query->latest();
+            },
+        ]);
+
+        $book->loadCount('reviews');
+        $book->loadAvg('reviews', 'rating');
+
+        return view('books.show', compact('book'));
     }
 
     /**
