@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Psy\CodeCleaner\AssignThisVariablePass;
 
 class Book extends Model
 {
@@ -26,31 +27,29 @@ class Book extends Model
     public function scopeWithReviewsCount(Builder $query, $from = null, $to = null): Builder
     {
         return $query->withCount([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
+            'reviews' => function (Builder $q) use ($from, $to) {
+                $this->dateRangeFilter($q, $from, $to);
+            }
         ]);
     }
 
     public function scopeWithAvgRating(Builder $query, $from = null, $to = null): Builder
     {
         return $query->withAvg([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
+            'reviews' => function (Builder $q) use ($from, $to) {
+                $this->dateRangeFilter($q, $from, $to);
+            }
         ], 'rating');
     }
 
     public function scopePopular(Builder $query, $from = null, $to = null): Builder
     {
-        // return $query->withCount('reviews')->orderBy('reviews_count', 'desc');
-        return $query->withCount([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
-        ])->orderBy('reviews_count', 'desc');
+        return $query->withReviewsCount($from, $to)->orderBy('reviews_count', 'desc');
     }
 
     public function scopeHighestRated(Builder $query, $from = null, $to = null): Builder
     {
-        // return $query->withAvg('reviews', 'rating')->orderBy('reviews_avg_rating', 'desc');
-        return $query->withAvg([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to),
-        ], 'rating')->orderBy('reviews_avg_rating', 'desc');
+        return $query->withAvgRating($from, $to)->orderBy('reviews_avg_rating', 'desc');
     }
 
     public function scopeMinReviews(Builder $query, int $minReviews)
