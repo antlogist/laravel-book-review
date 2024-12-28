@@ -12,9 +12,7 @@
         type="text"
         name="review"
         required
-        class="input">
-    {{ isset($review) ? $review : old('review') }}
-    </textarea>
+        class="input">{{ isset($review) ? $review : old('review') }}</textarea>
 
     @error('review')
     <div class="text-red-600/100 font-normal text-xs mb-2">{{ $message }}</div>
