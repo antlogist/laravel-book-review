@@ -22,7 +22,7 @@ class StoreReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'review' => 'required|string|max:255',
+            'review' => 'required|string|min:15|max:255',
             'rating' => 'required|integer|min:1|max:5'
         ];
     }
